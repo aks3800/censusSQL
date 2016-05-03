@@ -1,0 +1,579 @@
+create database project;
+
+use project;
+
+show tables;
+
+
+create table census
+(
+CNo int,
+year int,
+headedBy varchar(25),
+phase int,
+date int,
+PRIMARY KEY (CNo)
+);
+
+create table MOHA
+(
+Ecode int,
+CNo int,
+Ename varchar(25),
+post varchar(25),
+worksUnder varchar(25),
+workingFrom varchar(25),
+PRIMARY KEY (Ecode),
+FOREIGN KEY (CNo) REFERENCES census(CNo)
+);
+create table populationEnumeration
+(
+CNo int,
+year int,
+males int,
+females int,
+sexRatio float,
+literacy float,
+PRIMARY KEY (CNo),
+FOREIGN KEY (CNo) REFERENCES census(CNo)
+);
+
+create table houseListing
+(
+CNo int,
+year int,
+NoOfStates int,
+NoOfUT int,
+NoOfDistricts int,
+NoOfTehsiles int,
+NoOfTowns int,
+NoOfBlocks int,
+PRIMARY KEY (CNo),
+FOREIGN KEY (CNo) REFERENCES census(CNo)
+);
+
+
+create table states
+(
+Scode int,
+CNo int,
+Sname varchar(15),
+area float,
+NoOfDistricts int,
+literacy float,
+population int,
+males int,
+females int,
+sexRatio float,
+PRIMARY KEY (Scode),
+FOREIGN KEY (CNo) REFERENCES houseListing(CNo)
+);
+
+create table districts
+(
+Dcode int,
+Scode int,
+Dname varchar(25),
+area float,
+NoOfTehsiles int,
+literacy float,
+population int,
+males int,
+females int,
+sexRatio float,
+PRIMARY KEY (Dcode),
+FOREIGN KEY (Scode) REFERENCES states(Scode)
+);
+
+create table tehsiles
+(
+Tcode int,
+Dcode int,
+Tname varchar(25),
+area float,
+NoOfTowns int,
+males int,
+females int,
+sexRatio float,
+PRIMARY KEY (Tcode),
+FOREIGN KEY (Dcode) REFERENCES districts(Dcode)
+);
+
+create table towns
+(
+Tocode int,
+Tcode int,
+Toname varchar(25),
+NoOfBlocks int,
+males int,
+females int,
+sexRatio float,
+PRIMARY KEY (Tocode),
+FOREIGN KEY (Tcode) REFERENCES tehsiles(Tcode)
+);
+
+create table blocks
+(
+Bcode int,
+Tocode int,
+Bname varchar(25),
+males int,
+females int,
+sexRatio float,
+PRIMARY KEY (Bcode),
+FOREIGN KEY (Tocode) REFERENCES towns(Tocode)
+);
+
+create table UIAI
+(
+Pcode int,
+CNo int,
+name varchar(25),
+Scode int,
+PRIMARY KEY (Pcode),
+FOREIGN KEY (CNo) REFERENCES census(CNo)
+);
+
+create table people
+(
+Pcode int,
+Bcode int,
+name varchar(25),
+fatherName varchar(25),
+motherName varchar(25),
+brother int,
+sister int,
+partnerName varchar(25),
+children int,
+PRIMARY KEY(Pcode),
+FOREIGN KEY(Bcode) REFERENCES blocks(Bcode),
+FOREIGN KEY(Pcode) REFERENCES UIAI(Pcode)
+);
+
+
+INSERT INTO census(CNo,year,headedBy,phase,date)
+VALUES(1,1871,"BRITISH",NULL,NULL),
+(9,1951,"R.A GOPALASWAMY",4,NULL),
+(14,2001,"M. VIJAYNUNNI",3,NULL),
+(15,2011,"C.CHANDRAMUKHI",2,1042010);
+
+INSERT INTO houseListing(CNO,year,NoOfStates,NoOfUT,NoOfDistricts,NoOfTehsiles,NoOfTowns,NoOfBlocks)
+VALUES(1,1871,NULL,NULL,NULL,NULL,NULL,NULL),
+(9,1951,NULL,NULL,NULL,NULL,NULL,NULL),
+(14,2001,28,7,NULL,NULL,NULL,NULL),
+(15,2011,28,7,640,5767,7933,NULL);
+
+INSERT INTO populationEnumeration(CNo,year,males,females,sexRatio,literacy)
+VALUES(1,1871,NULL,NULL,NULL,NULL),
+(9,1951,18823090,17714346,1.0625,NULL),
+(14,2001,532223090,496514346,1.0719,NULL),
+(15,2011,623121843,587447730,1.007,72.99);
+
+INSERT INTO states(Scode,CNo,Sname,area,NoOfDistricts,literacy,population,males,females,sexRatio)
+VALUES(1,15,"ANDHRA PRADESH",160205,13,67.41,49386799,24738038,2448731,993);
+
+INSERT INTO states(Scode,Cno,Sname,area,NoOfDistricts,literacy,population,males,females,sexRatio)
+VALUES(28,15,"UTTRAKHAND",53484,13,79.63,10116752,5154178,4962574,963);
+
+INSERT INTO states(Scode,CNo,Sname,area,NoOfDistricts,literacy,population,males,females,sexRatio)
+VALUES(27,15,"UTTAR PRADESH",240928,71,67.68,199812341,104480510,95331831,912);
+
+INSERT INTO states(Scode,CNo,Sname,area,NoOfDistricts,literacy,population,males,females,sexRatio)
+VALUES(15,15,"MADHYA PRADESH",308252,51,69.32,72626809,37612306,35014503,931);
+
+
+INSERT INTO districts(Dcode,Scode,Dname,area,NoOfTehsiles,literacy,population,males,females,sexRatio)
+VALUES(5,28,"DEHRADUN",3088,6,84.25,1696694,892199,804495,902),(6,28,"HARIDWAR",2360,3,73.43,1890422,1005295,885127,880);
+
+INSERT INTO districts(Dcode,Scode,Dname,area,NoOfTehsiles,literacy,population,males,females,sexRatio)
+VALUES(1,27,"ALLAHABAD",3234,8,72.32,1117094,601363,515731,858),
+(4,27,"LUCKNOW",2528,4,72.29,4589838,2394476,2195362,917);
+
+INSERT INTO districts(Dcode,Scode,Dname,area,NoOfTehsiles,literacy,population,males,females,sexRatio)
+VALUES(2,15,"INDORE",3898,4,80.25,3272335,1699627,1577070,928),
+(3,15,"BHOPAL",2772,7,80.37,2371061,1236130,1134931,918);
+
+INSERT INTO tehsiles(Tcode,Dcode,Tname,area,NoOfTowns,males,females,sexRatio)
+VALUES(1,5,"DEHRADUN",1028,4,507897,413784,774),
+(15,6,"HARIDWAR",997,3,478512,312547,674);
+
+INSERT INTO tehsiles(Tcode,Dcode,Tname,area,NoOfTowns,males,females,sexRatio)
+VALUES(2,4,"LUCKNOW",691,5,176654,156592,921),
+(3,5,"MALIHABAD",632,1,165592,147296,912);
+
+INSERT INTO tehsiles(Tcode,Dcode,Tname,area,NoOfTowns,males,females,sexRatio)
+VALUES(4,2,"INDORE",2058,21,107897,93784,934),
+(5,2,"DEPALPUR",1998,17,67867,67777,877);
+
+
+INSERT INTO towns(Tocode,Tcode,Toname,NoOfBlocks,males,females,sexRatio)
+VALUES(1,1,"DEHRADUN",43,478420,303411,906),
+(17,1,"VIKAS NAGAR",47,78451,57412,887);
+
+INSERT INTO towns(Tocode,Tcode,Toname,NoOfBlocks,males,females,sexRatio)
+VALUES(2,2,"LKO MUNICIPAL CORP",96,35330,33496,891),
+(3,2,"KAKORI NAGAR",57,37570,35496,915);
+
+INSERT INTO towns(Tocode,Tcode,Toname,NoOfBlocks,males,females,sexRatio)
+VALUES(4,4,"INDORE",154,48420,33411,906),
+(5,4,"HARDOI",89,36798,23456,889);
+
+INSERT INTO blocks(Bcode,Tocode,Bname,males,females,sexRatio)
+VALUES(1,1,"RAIPUR",87412,63784,774),
+(2,1,"KARANPUR",78412,32146,978),
+(3,1,"DALANWALA",45126,31245,845),
+(4,1,"JAKHAN",7584,5846,799);
+
+
+INSERT INTO blocks(Bcode,Tocode,Bname,males,females,sexRatio)
+VALUES(5,2,"VIKRANT KHAND",7060,6119,928),
+(6,2,"VISHAL KHAND",7019,6318,931),
+(7,2,"VIRAT KHAND",7210,6069,912),
+(8,2,"VIKAS KHAND",7100,6221,919);
+
+
+INSERT INTO blocks(Bcode,Tocode,Bname,males,females,sexRatio)
+VALUES(9,5,"RAIPURIA",7412,3784,784),
+(10,5,"NANAPUR",8922,7655,965);
+
+INSERT INTO uiai(Pcode,CNo,name,Scode)
+VALUES(12345,15,"SEWA RAM SHARMA",28),
+(12346,15,"SUMAN SHARMA",28),
+(12347,15,"ANUSHKA SINGH",28),
+(12348,15,"AKSHAT SHARMA",28),
+(12331,15,"ABHINAV MATHUR",28),
+(12332,15,"NIKUNJ ARORA",28),
+(12321,15,"SNEHA RAINA",28),
+(12322,15,"MAHAM HAIDER",28),
+(12341,15,"AKANSHA PAL",28),
+(12342,15,"RAJESH KUMAR",28),
+(12343,15,"RAHUL SINGH",28);
+
+INSERT INTO uiai(Pcode,CNo,name,Scode)
+VALUES(14560,15,"SHIVAM SAXENA",27),
+(14561,15,"SHUBHAM SAXENA",27),
+(14562,15,"PUJIT KAMAL",27),
+(14563,15,"VISHAL JAJU",27),
+(14564,15,"AVANTIKA ATUL",27),
+(14565,15,"SHALINI GUPTA",27),
+(14566,15,"PRATEEK DUBEY",27),
+(14567,15,"MANISH SRIVASTAVA",27),
+(14568,15,"VISHAL BISHT",27),
+(14569,15,"MALIKA BOSE",27);
+
+INSERT INTO uiai(Pcode,CNo,name,Scode)
+VALUES(15678,15,"MEWA SHIVHARE",15),
+(15679,15,"UDAY NANDA",15),
+(15680,15,"ALOKIT NIGAM",15),
+(15681,15,"DIVITA DUBEY",15),
+(15682,15,"CHARU SINGHAL",15),
+(15683,15,"AISHWARYA SHARMA",15),
+(15684,15,"TANYA BHATT",15);
+
+INSERT INTO people(Pcode,Bcode,name,fatherName,motherName,brother,sister,partnerName,children)
+VALUES(12345,1,"SEWA RAM SHARMA","SUKHBIR DUTT","SATYAWATI",5,1,"SUMAN SHARMA",1),
+(12346,1,"SUMAN SHARMA","MAHENDRA KAUSHIK","SUSMITA KAUSHIK",3,1,"SEWA RAM SHARMA",1),
+(12347,1,"ANUSHKA SINGH","KAMAL SINGH","PINKY SINGH",1,0,NULL,0),
+(12348,1,"AKSHAT SHARMA","SEWA RAM SHARMA","SUMAN SHARMA",0,0,NULL,0),
+(12331,2,"ABHINAV MATHUR","MANOJ MATHUR","SEEMA MATHUR",1,0,"AATIKHAKHAN",0),
+(12332,2,"NIKUNJ ARORA","PANKAJ ARORA","DURGA ARORA",0,1,NULL,0),
+(12321,3,"SNEHA RAINA","SURESH RAINA","MEENAKSHI RAINA",1,0,NULL,0),
+(12322,3,"MAHAM HAIDER","HUSIAN HAIDER","FHATIMHA HAIDER",1,1,NULL,0),
+(12341,4,"AKANSHA PAL","AJAB PAL","MEENA PAL",1,0,NULL,0),
+(12342,4,"RAJESH KUMAR","ROHAN KUMAR","NEETU KUMAR",2,1,NULL,0),
+(12343,2,"RAHUL SINGH","MOHAN SINGH","USHA SINGH",0,0,NULL,0);
+
+
+
+INSERT INTO people(Pcode,Bcode,name,fatherName,motherName,brother,sister,partnerName,children)
+VALUES(14560,5,"SHIVAM SAXENA","ANAND SAXENA","VANDNA SAXENA",1,0,NULL,0),
+(14561,5,"SHUBHAM SAXENA","ANAND SAXENA","VANDNA SAXENA",1,0,NULL,0),
+(14562,5,"PUJIT KAMAL","VIKAS KAMAL","SAVITA KAMAL",1,2,"NIDHI KAMAL",2),
+(14563,6,"VISHAL JAJU","OMPAL JAJU","NANDINI JAJU",0,1,NULL,0),
+(14564,6,"AVANTIKA ATUL","NIKUNJ ATUL","RAVINA ATUL",0,0,"ADEEL KHAN",1),
+(14565,6,"SHALINI GUPTA","AKASH SHARMA","JUHI SHARMA",0,0,"RAVI GUPTA",2),
+(14566,7,"PRATEEK DUBEY","ANAND DUBEY","SAVITA DUBEY",1,0,NULL,0),
+(14567,7,"MANISH SRIVASTAVA","UTTAM SRIVASTAVA","ANKITA SRIVASTAVA",1,0,"SHEETAL SRIVASTAVA",1),
+(14568,7,"VISHAL BISHT","ROHIT BISHT","DARSHITA BISHT",1,1,NULL,0),
+(14569,8,"MALIKA BOSE","SURESH BOSE","NAYONIKA BOSE",0,0,NULL,0);
+
+INSERT INTO people(Pcode,Bcode,name,fatherName,motherName,brother,sister,partnerName,children)
+VALUES(15678,9,"MEWA SHIVHARE","RAGHVIR SHIVHARE","KAMLA DEVI",2,1,"SONI SHIVHARE",1),
+(15679,9,"UDAY NANDA","OM NANDA","HEENA NANDA",0,0,NULL,0),
+(15680,9,"ALOKIT NIGAM","PRADEEP KUMAR NIGAM","NEETA NIGAM",1,0,NULL,0),
+(15681,9,"DIVITA DUBEY","PRATEEK DUBEY","SWASTIKA DUBEY",0,1,NULL,0),
+(15682,10,"CHARU SINGHAL","SHIVAM SINGHAL","PRERNA SINGHAL",1,0,"ABHINAV SINGHAL",2),
+(15683,10,"AISHWARYA SHARMA","AMITHAB SHARMA","JAYA SHARMA",1,0,"AKSHAT SHARMA",0),
+(15684,10,"TANYA BHATT","SAHIL BHATT","GARIMA BHATT",0,1,"ALOKIT BHATT",2);
+
+
+
+INSERT INTO moha(Ecode,CNo,Ename,post,worksUnder,workingFrom)
+VALUES(101,15,"C. CHANDRAMUKHI","HEAD",NULL,1987),
+(102,15,"RAMESH SINGHAL","DEUPTY HEAD","C. CHANDRAMUKHI",2001),
+(103,15,"MANISH TIWARI","DEUPTY HEAD","C. CHANDRAMUKHI",1994),
+(104,15,"KUNAL MADAN","SUB DEUPTY","RAMESH SINGHAL",2001),
+(105,15,"SAHIL JAIN","SUB DEUPTY","RAMESH SINGHAL",2001),
+(106,15,"PRABHAV GARG","SUB DEUPTY","MANISH TIWARI",2002),
+(107,15,"ANUBHAV KESHAV","SUB DEUPTY","MANISH TIWARI",2002),
+(108,15,"GOVIND MOHAN","GROUND JOB","KUNAL MADAN",2010);
+
+INSERT INTO moha(Ecode,CNo,Ename,post,worksUnder,workingFrom)
+VALUES(109,15,"AMIT BANSAL","GROUND JOB","KUNAL MADAN",2010),
+(110,15,"JATIN YADAV","GROUND JOB","SAHIL JAIN",2010),
+(111,15,"NILESH AGGARWAL","GROUND JOB","SAHIL JAIN",2010),
+(112,15,"SHUBHAM GOEL","GROUND JOB","PRABHAV GARG",2010),
+(113,15,"SHUBHANKAR RAWAT","GROUND JOB","ANUBHAV KESHAV",2010),
+(114,15,"KUNAL CHIKERSAL","GROUND JOB","PRABHAV GARG",2010); 
+
+
+
+
+
+
+query 1: tell the number of districts in uttrakhand ?
+solution : select NoOfDistricts from states where Sname="UTTRAKHAND";
+
+query 2: give the list of states with decreasing order of their number of states ?
+solution : select Sname from states order by NoOfDistricts desc; 
+
+query 3: tell the names of the people having their sur name "sharma" ?
+solution: select name from people where name like '%sharma%';
+
+query 4: tell the names of the people along with their states having their sur name "sharma" ?
+solution : select name,Sname from uiai u,states s where name like '%sharma%' and u.Scode=s.Scode;
+
+query 5: list all the states alphabetically ?
+solution: select Sname from states order by Sname;
+
+query 6:list all the states who have got enrolled in AADHAR REGISTRATION ?
+solution 1: select Sname from uiai u,states s where u.Scode=s.Scode group by Sname;
+solution 2:select Scode,Sname from states where Scode in(select Scode from uiai);
+
+query 7: list all the states which have not yet enrolled in AADHAR REGISTRATION ?
+solution: select Scode,Sname from states where Scode not in (select Scode from uiai);
+
+query 8:list the only states whose districts information is stored int the databse ?
+solution : select Sname from states where Scode in(select s.Scode from states s,districts d where s.Scode=d.Scode);
+
+query 9: list all the states whose districts which have not been stored in the database ?
+solution :select Sname from states where Scode not in(select s.Scode from states s,districts d where s.Scode=d.Scode);
+
+query 10:list all the districts whose tehsils are not been stored in database ?
+solution :select Dname from districts where Dcode not in(select d.Dcode from districts d,tehsiles t where d.Dcode=t.Dcode);
+
+query 11:list all the tehsils whose towns data have not been stored in the database ?
+solution :select Tname from tehsiles where Tcode not in(select t.Tcode from tehsile
+s t,towns a where t.Tcode=a.Tcode); 
+
+query 12:list all the towns whose blocks data have not been stored in the database ?
+solution:select Toname from towns where Tocode not in(select t.Tocode from towns t
+,blocks b where t.Tocode=b.Tocode);
+
+query 13 :list all the blocks whose people's data have been stored in the databse ?
+solution:select Bname from blocks where Bcode in(select b.Bcode from blocks b,peop
+le p where b.Bcode=p.Bcode);
+
+query 14:list all the people along with their name,uiai number,State code ?
+solution :SELECT p.name,p.Pcode,u.Scode FROM people p LEFT OUTER JOIN uiai u ON (p.Pcode=u.Pcode);
+
+
+
+
+procedure 1: list all the details of the people by creating a procedure and state code to be entered by user ?
+solution : DELIMITER $$
+create procedure one(in scode int)
+begin
+select * from uiai where Scode=scode;
+end $$
+call one(15);
+
+procedure 2: tell the name of the person who headed the census in the nth census ?
+solution:
+DELIMITER $$
+create procedure two(in n int)
+begin
+select headedBy from census where CNo=n;
+end $$
+
+procedure 3: tell the name of people who have been working from a particular year entered by the user ?
+solution :
+DELIMITER $$
+create procedure three(in year int)
+begin
+select Ename from moha where year>workingFrom;
+end $$
+
+
+procedure 4: tell the name of the employess who is working under the name entered by the user ?
+solution :
+DELIMITER $$
+create procedure four(in name varchar(25))
+begin
+select Ename from moha where name=worksUnder;
+end $$
+
+
+procedure 5: tell whether the person is listed in the database by taking the input of unique number from the user and store the output into @chk ?
+solution :
+DELIMITER $$
+create procedure five(in num  int,out chk varchar(3))
+begin
+declare no int;
+select Pcode INTO no
+from uiai
+where Pcode=num;
+set chk="NO";
+if no=num then
+set chk="YES";
+end if;
+end $$ 
+
+
+procedure 6:insert into the uiai table using procedure ?
+solution :
+create procedure six(in num int,in c int,in nam varchar(25),in stcode int)
+begin
+insert into uiai(Pcode,CNo,name,Scode)
+values(num,c,nam,stcode);
+end $$
+
+procedure 7:delete data from uiai table taking the unique number as input ?
+solution :
+DELIMITER $$
+create procedure seven(in code int)
+begin
+delete from uiai
+where Pcode=code;
+END $$ 
+
+
+CURSOR 1: list all the data of uiai ?
+
+DELIMITER $$
+create procedure cur1()
+begin
+declare uniqueNum int;
+declare censusNum int;
+declare name  varchar(25);
+declare stateCode int;
+declare exit_loop boolean;
+declare t1_cursor cursor for
+select Pcode,CNo,name,Scode from uiai;
+declare continue handler for not found set exit_loop=TRUE;
+OPEN t1_cursor;
+t1_loop:LOOP
+FETCH t1_cursor INTO uniqueNum,censusNum,name,stateCode;
+select uniqueNum;
+select censusNum;
+select name;
+select stateCode;
+IF exit_loop THEN
+CLOSE t1_cursor;
+LEAVE t1_loop;
+END IF;
+END LOOP t1_loop;
+END $$
+
+
+cursor 2: using cursor find wether the user entered name is present in the database or not ?
+
+DELIMITER $$
+create procedure cur2(in nameOf varchar(25))
+begin
+declare n varchar(25);
+declare chk varchar(3);
+declare exit_loop boolean;
+declare t2_cursor cursor for
+select name from uiai;
+declare continue handler for not found set exit_loop=TRUE;
+set chk="no";
+open t2_cursor;
+t2_loop:LOOP
+FETCH t2_cursor INTO n;
+if n=nameOf then
+set chk="yes";
+elseif exit_loop then
+close t2_cursor;
+leave t2_loop;
+end if;
+end loop t2_loop;
+select chk;
+end $$
+
+
+cursor 3: give the list of name of the parent who is having n number of children. n to be entered by user ?
+
+DELIMITER $$
+create procedure cur3(in n int)
+begin
+declare noOfChildren int;
+declare nameOfParent varchar(25);
+declare exit_loop boolean;
+declare t3_cursor cursor for
+select children,name from people;
+declare continue handler for not found set exit_loop=TRUE;
+
+open t3_cursor;
+t3_loop:LOOP
+FETCH t3_cursor INTO noOfChildren,nameOfParent;
+if n=noOfChildren then
+select nameOfParent;
+select noOfChildren;
+elseif exit_loop then
+close t3_cursor;
+leave t3_loop;
+end if;
+end loop t3_loop;
+end $$
+
+
+cursor 4 :list all the names of employess working under the employee entered by user ?
+
+DELIMITER $$
+create procedure cur4(in n varchar(25))
+begin
+declare name varchar(25);
+declare under varchar(15);
+declare exit_loop boolean;
+declare t4_cursor cursor for
+select Ename,worksUnder from moha;
+declare continue handler for not found set exit_loop=TRUE;
+
+open t4_cursor;
+t4_loop:LOOP
+FETCH t4_cursor INTO name,under;
+if n=under then
+select name;
+elseif exit_loop then
+close t4_cursor;
+leave t4_loop;
+end if;
+end loop t4_loop;
+end $$
+
+
+
+trigger 1 :delete the details of uiai and enter the same in other table death ?
+
+DELIMITER $$
+create trigger before_del_uiai
+BEFORE DELETE ON uiai
+FOR EACH ROW
+BEGIN
+INSERT INTO death
+VALUES(old.Pcode,old.CNo,old.name,old.Scode);
+END $$
+
+
+trigger 2: create trigger for inserting the values in uiai before inserting the values in people ?
+
+DELIMITER $$
+create trigger before_ins
+BEFORE INSERT ON people
+FOR EACH ROW
+BEGIN
+INSERT INTO uiai
+VALUES(new.Pcode,15,new.name,28);
+END $$
+
